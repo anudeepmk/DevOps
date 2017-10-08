@@ -1,0 +1,38 @@
+{
+  "variables":{
+    "tagname": "0.1",
+    "login_username": "{{env `username`}}",
+    "login_password": "{{env `pass`}}"
+  },
+  "builders": [{
+    "type": "docker",
+    "image": "node:7",
+    "commit": "true",
+    "changes": [
+    "WORKDIR /app",
+    "CMD node index.js",
+    "EXPOSE 8081"
+  ]
+  }],
+ "provisioners": [
+    {
+      "type": "shell",
+      "inline": ["apt-get update", "apt-get -y install python git", "mkdir /app && git clone https://github.com/buddy-works/node-in-docker.git /app", "npm install express --save"]
+    }
+  ],
+  "post-processors": [
+     [
+      {
+        "type": "docker-tag",
+        "repository": "{{user `login_username`}}/nodejs",
+        "tag": "{{user `tagname`}}"
+      },
+      {
+        "type": "docker-push",
+        "login": "true",
+        "login_username": "{{user `login_username`}}",
+        "login_password": "{{user `login_password`}}"
+      }
+    ]
+    ] 
+}

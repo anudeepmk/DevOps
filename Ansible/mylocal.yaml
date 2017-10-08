@@ -1,0 +1,20 @@
+---
+- hosts: mylocal
+  vars:
+   install_name: nginx
+   yesorno: no
+  tasks:
+  - name: install or remove nginx
+    apt:
+      name: "{{install_name}}"
+      state: latest
+      update_cache: "{{yesorno}}"
+  - name: stop nginx
+    service: name=nginx state=stopped
+    notify:
+    - handler to be run
+  handlers:
+  - name: "handler to be run"
+    service: 
+     name: "{{install_name}}"
+     state: restarted
