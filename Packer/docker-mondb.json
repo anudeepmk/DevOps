@@ -1,0 +1,38 @@
+{
+  "variables":{
+    "tagname": "0.1",
+    "login_username": "{{env `username`}}",
+    "login_password": "{{env `pass`}}"
+  },
+  "builders": [{
+    "type": "docker",
+    "image": "ubuntu",
+    "commit": "true",
+    "changes": [
+    "CMD [\"--port 27017\"]",
+    "EXPOSE 27017",
+    "ENTRYPOINT usr/bin/mongod"
+  ]
+  }],
+ "provisioners": [
+    {
+      "type": "shell",
+      "script": "install_mongodb.sh"
+    }
+  ],
+  "post-processors": [
+     [
+      {
+        "type": "docker-tag",
+        "repository": "{{user `login_username`}}/mongdb",
+        "tag": "{{user `tagname`}}"
+      },
+      {
+        "type": "docker-push",
+        "login": "true",
+        "login_username": "{{user `login_username`}}",
+        "login_password": "{{user `login_password`}}"
+      }
+    ]
+    ] 
+}
